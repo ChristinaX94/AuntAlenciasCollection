@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuntAlenciasCollection", "AuntAlenciasCollection\AuntAlenciasCollection.csproj", "{CDDE66D2-138C-4EBC-BE47-CC70E6532317}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AAC_Tests", "AAC_Tests\AAC_Tests.csproj", "{38136599-163D-4D99-84DD-106A4DC542CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDDE66D2-138C-4EBC-BE47-CC70E6532317}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDDE66D2-138C-4EBC-BE47-CC70E6532317}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDDE66D2-138C-4EBC-BE47-CC70E6532317}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDDE66D2-138C-4EBC-BE47-CC70E6532317}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38136599-163D-4D99-84DD-106A4DC542CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38136599-163D-4D99-84DD-106A4DC542CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38136599-163D-4D99-84DD-106A4DC542CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38136599-163D-4D99-84DD-106A4DC542CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4604BAF9-D0FC-465F-9F2A-5BDCFD98A714}
+	EndGlobalSection
+EndGlobal
