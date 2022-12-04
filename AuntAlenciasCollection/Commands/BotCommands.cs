@@ -2,7 +2,11 @@
 using DSharpPlus.Entities;
 using DSharp​Plus.SlashCommands;
 using Google.Protobuf.WellKnownTypes;
+using System;
+using System.IO;
 using System.Net;
+using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AuntAlenciasCollection
 {
@@ -38,7 +42,6 @@ namespace AuntAlenciasCollection
 
             DiscordEmbed embed = new DiscordEmbedBuilder
             {
-                //ImageUrl = "https://epic7x.com/wp-content/uploads/2019/01/Alencia.png",
                 ImageUrl = $"attachment://{filename}",
                 Description = "Local Alencia",
                 Color = DiscordColor.HotPink
@@ -52,8 +55,6 @@ namespace AuntAlenciasCollection
 
             }.WithFile(stream);
 
-            var timer = TimeSpan.FromSeconds(60);   
-            //await ctx.CreateResponseAsync(builder).ConfigureAwait(false);
             await ctx.DeferAsync(true);
             await ctx.Channel.SendMessageAsync(builder).ConfigureAwait(false);
             await ctx.DeleteResponseAsync();
@@ -169,7 +170,7 @@ namespace AuntAlenciasCollection
                 var result = _dataManager.savePicture(character: character, picture: pictureData, url: discordAttachment.Url);
                 if (!result.success)
                 {
-                    await ctx.CreateResponseAsync("Error saving file on Database!").ConfigureAwait(false);
+                    await ctx.CreateResponseAsync("Error saving file on Database!\n\rReason: "+ result.message).ConfigureAwait(false);
                 }
 
                 await ctx.CreateResponseAsync("File saved successfully!").ConfigureAwait(false);
@@ -183,6 +184,99 @@ namespace AuntAlenciasCollection
 
         }
 
+
+        [SlashCommand("loadURL", "Loads the URL of the picture from Database")]
+        public async Task loadURL(InteractionContext ctx,
+            [Option("character", "Character to load")] string character)
+        {
+            try
+            {
+                var message = (string)_dataManager.loadPictureURL(character: character);
+                if (String.IsNullOrEmpty(message) || message.Equals("Error"))
+                {
+                    await ctx.CreateResponseAsync("Error retrieving file!").ConfigureAwait(false);
+                }
+
+                DiscordEmbed embed = new DiscordEmbedBuilder
+                {
+                    ImageUrl = message,
+                    Description = character,
+                    Color = DiscordColor.PhthaloGreen
+
+                }.Build();
+
+                await ctx.CreateResponseAsync(embed).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                await ctx.CreateResponseAsync("Error retrieving file!").ConfigureAwait(false);
+                throw;
+            }
+        }
+
+        [SlashCommand("loadPic", "Loads the picture from Database")]
+        public async Task loadPic(InteractionContext ctx,
+            [Option("character", "Character to load")] string character)
+        {
+            try
+            {
+                //file must not exist... for now
+                var message = _dataManager.loadPicturePNG(character: character);
+                if (message == null)
+                {
+                    await ctx.CreateResponseAsync("Error retrieving file!").ConfigureAwait(false);
+                }
+
+                var tempPath = Path.Combine(Path.GetTempPath(), "Character.png");
+
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+
+                MemoryStream ms = new MemoryStream(message, 0, message.Length);
+                ms.Write(message, 0, message.Length);
+                
+                FileStream stream = new FileStream(tempPath, FileMode.Create);
+                ms.WriteTo(stream);
+                stream.Close();
+
+                FileInfo fileInfo = new FileInfo(tempPath);
+                var stream2 = fileInfo.OpenRead();
+
+                
+
+                DiscordEmbed embed = new DiscordEmbedBuilder
+                {
+                    ImageUrl = $"attachment://Character.png",
+                    Description = "Local Alencia",
+                    Color = DiscordColor.HotPink
+
+                }.Build();
+
+
+                var builder = new Discord​Message​Builder
+                {
+                    Embed = embed
+
+                }.WithFile(stream2);
+
+                await ctx.DeferAsync(true);
+                await ctx.Channel.SendMessageAsync(builder).ConfigureAwait(false);
+                
+                stream2.Close();
+                
+                await ctx.DeleteResponseAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                await ctx.CreateResponseAsync("Error retrieving file!").ConfigureAwait(false);
+                throw;
+            }
+
+        }
     }
 
 }

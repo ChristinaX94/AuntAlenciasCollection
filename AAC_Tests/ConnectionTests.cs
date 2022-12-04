@@ -9,7 +9,7 @@ namespace AAC_Tests
             Console.WriteLine("Hello, World!");
 
             Connection connection = new Connection();
-            var result = connection.cycle(query: "select * from user");
+            var result = connection.cycleAppend(query: "select * from user");
             if (!result.success)
             {
                 Console.WriteLine(result.message);

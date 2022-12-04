@@ -1,4 +1,6 @@
 ﻿using AuntAlenciasCollection.Commons;
+using AuntAlenciasCollection.DataHandling;
+using AuntAlenciasCollection.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
@@ -18,7 +20,7 @@ namespace AuntAlenciasCollection.DatabaseConnection
         private string password = "4unt!@CUT3";
         private MySqlConnection connection;
 
-        public Result cycle(string query)
+        public Result cycleAppend(string query, List<MySqlParameter> parameters = null)
         {
             Result result = new Result();
             try
@@ -29,7 +31,7 @@ namespace AuntAlenciasCollection.DatabaseConnection
                     return result;
                 }
 
-                result = executeQuery(query);
+                result = executeQuery(query, parameters);
                 if (!result.success)
                 {
                     return result;
@@ -40,6 +42,42 @@ namespace AuntAlenciasCollection.DatabaseConnection
                 {
                     return result;
                 }
+            }
+            catch (Exception ex)
+            {
+                result.success = false;
+                result.message = ex.Message;
+            }
+            return result;
+        }
+
+        public Result cycleRead(SQLItem sql, Model model)
+        {
+            Result result = new Result();
+            try
+            {
+                result = connect();
+                if (!result.success)
+                {
+                    result.message = "Error";
+                    return result;
+                }
+
+                var obj = executeReadQuery(sql, model);
+                if (obj == null)
+                {
+                    result.message = "Error";
+                    return result;
+                }
+
+                result = disconnect();
+                if (!result.success)
+                {
+                    result.message = "Error";
+                    return result;
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -67,19 +105,29 @@ namespace AuntAlenciasCollection.DatabaseConnection
             return result;
         }
 
-        private Result executeQuery(string query)
+        private Result executeQuery(string query, List<MySqlParameter> parameters = null)
         {
             Result result = new Result();
             try
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
-                MySqlDataReader reader = cmd.ExecuteReader();
 
+                if(parameters!=null && parameters.Count > 0)
+                {
+                    foreach(var parameter in parameters)
+                    {
+                        cmd.Parameters.Add(parameter);
+                    }
+                }
+
+                cmd.ExecuteNonQuery();
+
+                //MySqlDataReader reader = cmd.ExecuteReader();
                 //while (reader.Read())
                 //{
                 //    Console.WriteLine(reader["discordID"]);
                 //}
-                
+
                 result.success = true;
             }
             catch (Exception ex)
@@ -88,6 +136,41 @@ namespace AuntAlenciasCollection.DatabaseConnection
                 result.message = ex.Message;
             }
             return result;
+        }
+
+        private object executeReadQuery(SQLItem sql, Model model)
+        {
+            Result result = new Result();
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(sql.query, connection);
+
+                if (sql.parameters != null && sql.parameters.Count > 0)
+                {
+                    foreach (var parameter in sql.parameters)
+                    {
+                        cmd.Parameters.Add(parameter);
+                    }
+                }
+
+                cmd.ExecuteNonQuery();
+
+                MySqlDataReader reader = cmd.ExecuteReader();
+                result = model.load(reader);
+                if (!result.success)
+                {
+                    return result;
+                }
+
+                result.success = true;
+
+            }
+            catch (Exception ex)
+            {
+                result.success = false;
+                result.message = ex.Message;
+            }
+            return result.message;
         }
 
         private Result disconnect()

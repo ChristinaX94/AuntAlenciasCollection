@@ -10,6 +10,7 @@ namespace AuntAlenciasCollection.Commons
     {
         public bool success;
         public string message;
+        public object obj;
 
         public Result(bool success = false, string message = "")        
         {
