@@ -13,7 +13,7 @@ namespace AuntAlenciasCollection.BotHandling
         {
             var config = new DiscordConfiguration
             { 
-                Token= "MTAzMDgyNzM1MDEzNDM3ODU1OA.GQlDXF.--uUDEiYkXrjC_TAX8BWUpMWVuId8RiMVRWkrY",
+                Token= "GenerateNewToken",
                 TokenType = TokenType.Bot,
                 AutoReconnect=true,
                 MinimumLogLevel=Microsoft.Extensions.Logging.LogLevel.Debug
